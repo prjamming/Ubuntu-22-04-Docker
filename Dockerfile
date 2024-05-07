@@ -1,9 +1,8 @@
 FROM ubuntu:22.04
 
-RUN apt-get update && apt-get upgrade && apt-get install -y \
+RUN apt-get update && apt-get install -y \
     xfce4 \
-    tightvncserver \
-    noVNC
+    x11vnc
 
 RUN useradd -ms /bin/bash vncuser
 
@@ -19,4 +18,4 @@ RUN echo "VNCSERVER=1:1" >> /etc/environment
 
 RUN chmod +x /home/vncuser/.vnc/xstartup
 
-CMD ["/usr/bin/tightvncserver"]
+CMD ["/usr/bin/x11vnc", "-forever", "-display", ":1"]
