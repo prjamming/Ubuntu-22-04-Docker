@@ -19,3 +19,5 @@ RUN echo "VNCSERVER=1:1" >> /etc/environment
 RUN chmod +x /home/vncuser/.vnc/xstartup
 
 CMD ["/usr/bin/x11vnc", "-forever", "-display", ":1"]
+
+EXPOSE 5901
