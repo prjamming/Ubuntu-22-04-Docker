@@ -1,8 +1,13 @@
 FROM ubuntu:22.04
 
+# Skip tzdata configuration (assuming x11vnc)
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && apt-get install -y \
     xfce4 \
     x11vnc
+
+RUN apt-get upgrade -y
 
 RUN useradd -ms /bin/bash vncuser
 
@@ -19,5 +24,3 @@ RUN echo "VNCSERVER=1:1" >> /etc/environment
 RUN chmod +x /home/vncuser/.vnc/xstartup
 
 CMD ["/usr/bin/x11vnc", "-forever", "-display", ":1"]
-
-EXPOSE 5901
