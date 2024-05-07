@@ -1,19 +1,22 @@
 FROM ubuntu:22.04
 
-# Update package lists
-RUN apt-get update -y
+RUN apt-get update && apt-get install -y \
+    xfce4 \
+    tightvncserver \
+    noVNC
 
-# Install required packages
-RUN apt-get install -y x11vnc xvfb tightvnc-viewer firefox
+RUN useradd -ms /bin/bash vncuser
 
-# Set VNC password (change "your_password" to your desired password)
-RUN echo "root" | x11vnc -storepasswd - > ~/.vnc/passwd
+RUN mkdir -p /home/vncuser/.vnc
 
-# Start Xvfb for graphical session
-RUN echo "Xvfb :1 -screen 0 1024x768x24 &" >> /etc/rc.local
+RUN echo "passwd:x:0:0:VNC User:/home/vncuser:/bin/bash" >> /etc/passwd
+RUN echo "vncuser:x:1000:0::/home/vncuser:/bin/bash" >> /etc/passwd
+RUN echo "vncuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# Start noVNC server in the background
-RUN noVNC &
+RUN echo ":1 -localhost -geometry 1024x768 -depth 16 -auth vncshadow" > /home/vncuser/.vnc/xstartup
 
-# Run headless Firefox for initial display (prevents black screen)
-CMD ["firefox"]
+RUN echo "VNCSERVER=1:1" >> /etc/environment
+
+RUN chmod +x /home/vncuser/.vnc/xstartup
+
+CMD ["/usr/bin/tightvncserver"]
